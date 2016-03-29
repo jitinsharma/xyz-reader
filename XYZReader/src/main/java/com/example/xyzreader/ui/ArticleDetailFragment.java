@@ -2,14 +2,17 @@ package com.example.xyzreader.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -19,6 +22,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -55,6 +60,7 @@ public class ArticleDetailFragment extends Fragment implements
     private int mStatusBarFullOpacityBottom;
     Toolbar toolbar;
     CollapsingToolbarLayout collapsingToolbar;
+    FloatingActionButton shareButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -132,11 +138,12 @@ public class ArticleDetailFragment extends Fragment implements
         });*/
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+        shareButton = (FloatingActionButton)mRootView.findViewById(R.id.share_button);
         //mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
 
         mStatusBarColorDrawable = new ColorDrawable(0);
 
-        /*mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
+        shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
@@ -144,14 +151,14 @@ public class ArticleDetailFragment extends Fragment implements
                         .setText("Some sample text")
                         .getIntent(), getString(R.string.action_share)));
             }
-        });*/
+        });
 
         bindViews();
-        updateStatusBar();
+        //updateStatusBar();
         return mRootView;
     }
 
-    private void updateStatusBar() {
+    /*private void updateStatusBar() {
         int color = 0;
         if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
             float f = progress(mScrollY,
@@ -164,7 +171,7 @@ public class ArticleDetailFragment extends Fragment implements
         }
         mStatusBarColorDrawable.setColor(color);
         //mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
-    }
+    }*/
 
     static float progress(float v, float min, float max) {
         return constrain((v - min) / (max - min), 0, 1);
@@ -190,7 +197,7 @@ public class ArticleDetailFragment extends Fragment implements
         bylineView.setMovementMethod(new LinkMovementMethod());
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
         final CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar);
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
+        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Roboto-Regular.ttf"));
 
         if (mCursor != null) {
             mRootView.setAlpha(0);
@@ -203,7 +210,7 @@ public class ArticleDetailFragment extends Fragment implements
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
                             System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                             DateUtils.FORMAT_ABBREV_ALL).toString()
-                            + " by <font color='#ffffff'>"
+                            + " by <font color='#000000'>"
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)
                             + "</font>"));
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
@@ -216,10 +223,18 @@ public class ArticleDetailFragment extends Fragment implements
                                 Palette p = Palette.generate(bitmap, 12);
                                 mMutedColor = p.getDarkMutedColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                mRootView.findViewById(R.id.meta_bar)
-                                        .setBackgroundColor(mMutedColor);
+                                /*mRootView.findViewById(R.id.meta_bar)
+                                        .setBackgroundColor(mMutedColor);*/
+                                collapsingToolbar.setContentScrimColor(mMutedColor);
+                                Window window = getActivity().getWindow();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                                    window.setStatusBarColor(mMutedColor);
+                                    //toolbar.setBackgroundColor(mMutedColor);
+                                }
                                 //mutedColor = p.getMutedColor(R.attr.colorPrimary);
-                                updateStatusBar();
+                                //updateStatusBar();
                             }
                             /*if (bitmap != null) {
                                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
