@@ -36,10 +36,21 @@ public class ArticleListActivity extends AppCompatActivity implements
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Transition ts = new Explode();
+            ts.setStartDelay(2000);
+            //set the duration
+            ts.setDuration(5000);
+            getWindow().setEnterTransition(ts);
+            //set an exit transition so it is activated when the current activity exits
+            getWindow().setExitTransition(ts);
+        }*/
         super.onCreate(savedInstanceState);
+        //supportRequestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_article_list);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -56,6 +67,11 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             refresh();
         }
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //getWindow().setExitTransition(new Explode());
+            bundle = ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
+        }*/
+
     }
 
     private void refresh() {
