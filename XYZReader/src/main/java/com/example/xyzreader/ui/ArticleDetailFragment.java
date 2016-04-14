@@ -31,6 +31,8 @@ import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 
+import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
+
 /**
  * A fragment representing a single Article detail screen. This fragment is
  * either contained in a {@link ArticleListActivity} in two-pane mode (on
@@ -59,7 +61,7 @@ public class ArticleDetailFragment extends Fragment implements
     private int mStatusBarFullOpacityBottom;
     Toolbar toolbar;
     //CollapsingToolbarLayout collapsingToolbar;
-    net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout collapsingToolbar;
+    CollapsingToolbarLayout collapsingToolbar;
     FloatingActionButton shareButton;
 
     /**
@@ -152,7 +154,6 @@ public class ArticleDetailFragment extends Fragment implements
                         .getIntent(), getString(R.string.action_share)));
             }
         });
-
         bindViews();
         //updateStatusBar();
         return mRootView;
@@ -196,8 +197,9 @@ public class ArticleDetailFragment extends Fragment implements
         TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
-        final net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout collapsingToolbar = (net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar);
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Roboto-Regular.ttf"));
+        final CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar);
+        bylineView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Roboto-Regular.ttf"), Typeface.BOLD);
+        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Roboto-Medium.ttf"), Typeface.NORMAL);
 
         if (mCursor != null) {
             mRootView.setAlpha(0);
@@ -210,9 +212,9 @@ public class ArticleDetailFragment extends Fragment implements
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
                             System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                             DateUtils.FORMAT_ABBREV_ALL).toString()
-                            + " by <font color='#000000'>"
+                            + " by "
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                            + "</font>"));
+                            ));
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
